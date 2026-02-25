@@ -1,0 +1,63 @@
+# ===========================
+# Build output
+# ===========================
+target/
+build/
+out/
+*.class
+*.jar
+*.war
+
+# ===========================
+# Maven
+# ===========================
+.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
+
+# ===========================
+# IDE — IntelliJ IDEA
+# ===========================
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# ===========================
+# IDE — VS Code
+# ===========================
+.vscode/
+
+# ===========================
+# IDE — Eclipse
+# ===========================
+.project
+.classpath
+.settings/
+
+# ===========================
+# Environment & Secrets
+# ===========================
+.env
+.env.local
+.env.production
+application-prod.yml
+application-production.yml
+
+# ===========================
+# OS files
+# ===========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===========================
+# Logs
+# ===========================
+*.log
+logs/
+log/
+
+# ===========================
+# Project-specific exclusions
+# ===========================
+ARCHITECTURE.md

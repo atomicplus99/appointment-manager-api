@@ -1,0 +1,33 @@
+# ==================== Database ====================
+spring.datasource.url=jdbc:postgresql://localhost:5432/appointment_manager
+spring.datasource.username=YOUR_DB_USERNAME
+spring.datasource.password=YOUR_DB_PASSWORD
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# ==================== JPA ====================
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+# ==================== Flyway ====================
+spring.flyway.enabled=true
+spring.flyway.locations=classpath:db/migration
+spring.flyway.baseline-on-migrate=false
+
+# ==================== Redis ====================
+spring.data.redis.host=localhost
+spring.data.redis.port=6379
+
+# ==================== JWT ====================
+app.jwt.secret=YOUR_JWT_SECRET_MIN_256_BITS
+app.jwt.expiration-ms=86400000
+
+# ==================== API Docs ====================
+springdoc.api-docs.path=/api-docs
+springdoc.swagger-ui.path=/swagger-ui.html
+springdoc.swagger-ui.enabled=true
+
+# ==================== Logging ====================
+logging.level.org.flywaydb=DEBUG
+logging.level.org.hibernate.SQL=DEBUG

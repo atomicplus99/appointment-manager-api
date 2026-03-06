@@ -15,6 +15,10 @@ public class BusinessSpecification {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
+            if (filter.id() != null) {
+                predicates.add(cb.equal(root.get("id"), filter.id()));
+            }
+
             if (filter.name() != null && !filter.name().isBlank()) {
                 predicates.add(cb.like(cb.lower(root.get("name")),
                         "%" + filter.name().toLowerCase() + "%"));

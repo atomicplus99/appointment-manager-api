@@ -6,6 +6,7 @@ import com.sc.appointment_manager.infrastructure.security.UserDetailsServiceImpl
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
@@ -65,6 +66,18 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**"
                         ).permitAll()
+                        // Negocios
+                        .requestMatchers(HttpMethod.POST, "/api/v1/businesses").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/businesses/**").hasAnyRole("ADMIN", "OWNER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/businesses/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/businesses/**").hasRole("OWNER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/businesses/**").hasAnyRole("ADMIN", "OWNER")
+                        // Clientes
+                        .requestMatchers(HttpMethod.POST, "/api/v1/clients").hasAnyRole("ADMIN", "OWNER")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/clients").hasAnyRole("ADMIN", "OWNER", "STAFF")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/clients/**").hasAnyRole("ADMIN", "OWNER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/clients/**").hasAnyRole("ADMIN", "OWNER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/clients/**").hasAnyRole("ADMIN", "OWNER")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
@@ -74,6 +87,14 @@ public class SecurityConfig {
                                     "No autenticado. Proporcione un token de acceso válido."
                             );
                             response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+                            response.getWriter().write(objectMapper.writeValueAsString(problem));
+                        })
+                        .accessDeniedHandler((request, response, denied) -> {
+                            ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                                    HttpStatus.FORBIDDEN, "No tienes permiso para realizar esta acción.");
+                            response.setStatus(HttpStatus.FORBIDDEN.value());
                             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
                             response.getWriter().write(objectMapper.writeValueAsString(problem));

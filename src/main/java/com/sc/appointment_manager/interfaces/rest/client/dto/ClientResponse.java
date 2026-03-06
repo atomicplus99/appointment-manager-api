@@ -1,10 +1,12 @@
 package com.sc.appointment_manager.interfaces.rest.client.dto;
 
 import com.sc.appointment_manager.domain.client.Client;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@Schema(description = "Datos del cliente")
 public record ClientResponse(
         UUID id,
         UUID businessId,

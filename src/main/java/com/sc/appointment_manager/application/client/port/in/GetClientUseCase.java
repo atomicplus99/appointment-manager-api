@@ -8,6 +8,6 @@ import org.springframework.data.domain.Pageable;
 import java.util.UUID;
 
 public interface GetClientUseCase {
-    Client getById(UUID id);
+    Client getById(UUID id, UUID callerBusinessId);
     Page<Client> getAll(ClientFilterQuery filter, Pageable pageable);
 }

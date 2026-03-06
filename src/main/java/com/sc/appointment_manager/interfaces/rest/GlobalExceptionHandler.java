@@ -2,6 +2,8 @@ package com.sc.appointment_manager.interfaces.rest;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.sc.appointment_manager.application.auth.exception.InvalidRefreshTokenException;
+import com.sc.appointment_manager.domain.business.exception.BusinessAccessDeniedException;
+import com.sc.appointment_manager.domain.client.exception.ClientAccessDeniedException;
 import com.sc.appointment_manager.domain.shared.exception.DomainEntityNotActiveException;
 import com.sc.appointment_manager.domain.shared.exception.DomainEntityNotFoundException;
 import org.springframework.dao.DataAccessException;
@@ -35,6 +37,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidRefreshTokenException.class)
     public ProblemDetail handleInvalidRefreshToken(InvalidRefreshTokenException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler(BusinessAccessDeniedException.class)
+    public ProblemDetail handleBusinessAccessDenied(BusinessAccessDeniedException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
+    @ExceptionHandler(ClientAccessDeniedException.class)
+    public ProblemDetail handleClientAccessDenied(ClientAccessDeniedException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

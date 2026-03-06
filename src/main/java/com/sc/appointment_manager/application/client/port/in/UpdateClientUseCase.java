@@ -6,5 +6,5 @@ import com.sc.appointment_manager.domain.client.Client;
 import java.util.UUID;
 
 public interface UpdateClientUseCase {
-    Client updateClient(UUID id, UpdateClientCommand command);
+    Client updateClient(UUID id, UpdateClientCommand command, UUID callerBusinessId);
 }

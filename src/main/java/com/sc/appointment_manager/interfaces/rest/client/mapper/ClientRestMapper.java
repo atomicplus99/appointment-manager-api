@@ -12,8 +12,9 @@ import java.util.UUID;
 @Component
 public class ClientRestMapper {
 
-    public CreateClientCommand toCommand(CreateClientRequest request) {
+    public CreateClientCommand toCommand(CreateClientRequest request, UUID callerBusinessId) {
         return new CreateClientCommand(
+                callerBusinessId,
                 request.businessId(),
                 request.name(),
                 request.email(),

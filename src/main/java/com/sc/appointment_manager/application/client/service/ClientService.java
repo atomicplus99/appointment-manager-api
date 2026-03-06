@@ -7,6 +7,7 @@ import com.sc.appointment_manager.application.client.port.in.DeactivateClientUse
 import com.sc.appointment_manager.application.client.port.in.GetClientUseCase;
 import com.sc.appointment_manager.application.client.port.in.UpdateClientUseCase;
 import com.sc.appointment_manager.domain.client.Client;
+import com.sc.appointment_manager.domain.client.exception.ClientAccessDeniedException;
 import com.sc.appointment_manager.domain.client.exception.ClientNotActiveException;
 import com.sc.appointment_manager.domain.client.exception.ClientNotFoundException;
 import com.sc.appointment_manager.domain.client.port.ClientRepository;
@@ -33,6 +34,8 @@ public class ClientService implements
     @Override
     @Transactional
     public Client createClient(CreateClientCommand command) {
+        if (command.callerBusinessId() != null && !command.callerBusinessId().equals(command.businessId()))
+            throw new ClientAccessDeniedException(command.businessId());
         Client client = Client.builder()
                 .id(UUID.randomUUID())
                 .businessId(command.businessId())
@@ -49,12 +52,12 @@ public class ClientService implements
 
     @Override
     @Transactional(readOnly = true)
-    public Client getById(UUID id) {
+    public Client getById(UUID id, UUID callerBusinessId) {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException(id));
-        if (!client.isActive()) {
-            throw new ClientNotActiveException(id);
-        }
+        if (!client.isActive()) throw new ClientNotActiveException(id);
+        if (callerBusinessId != null && !client.getBusinessId().equals(callerBusinessId))
+            throw new ClientAccessDeniedException(id);
         return client;
     }
 
@@ -66,12 +69,12 @@ public class ClientService implements
 
     @Override
     @Transactional
-    public Client updateClient(UUID id, UpdateClientCommand command) {
+    public Client updateClient(UUID id, UpdateClientCommand command, UUID callerBusinessId) {
         Client existing = clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException(id));
-        if (!existing.isActive()) {
-            throw new ClientNotActiveException(id);
-        }
+        if (!existing.isActive()) throw new ClientNotActiveException(id);
+        if (callerBusinessId != null && !existing.getBusinessId().equals(callerBusinessId))
+            throw new ClientAccessDeniedException(id);
         return clientRepository.save(existing.toBuilder()
                 .name(command.name())
                 .email(command.email())
@@ -82,9 +85,11 @@ public class ClientService implements
 
     @Override
     @Transactional
-    public void deactivateClient(UUID id) {
+    public void deactivateClient(UUID id, UUID callerBusinessId) {
         Client existing = clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException(id));
+        if (callerBusinessId != null && !existing.getBusinessId().equals(callerBusinessId))
+            throw new ClientAccessDeniedException(id);
         clientRepository.save(existing.toBuilder()
                 .active(false)
                 .build());

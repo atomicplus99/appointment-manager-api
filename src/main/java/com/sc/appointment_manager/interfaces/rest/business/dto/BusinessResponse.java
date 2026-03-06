@@ -2,10 +2,12 @@ package com.sc.appointment_manager.interfaces.rest.business.dto;
 
 import com.sc.appointment_manager.domain.business.Business;
 import com.sc.appointment_manager.domain.business.BusinessType;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@Schema(description = "Datos del negocio")
 public record BusinessResponse(
         UUID id,
         String name,

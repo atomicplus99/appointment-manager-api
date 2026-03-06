@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public interface DeactivateBusinessUseCase {
 
-    void deactivateBusiness(UUID id);
+    void deactivateBusiness(UUID id, UUID callerBusinessId);
 }

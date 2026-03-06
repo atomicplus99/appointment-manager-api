@@ -1,26 +1,16 @@
 package com.sc.appointment_manager.interfaces.rest.business.dto;
 
-import com.sc.appointment_manager.domain.business.BusinessType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
-@Schema(description = "Datos para actualización completa del negocio (solo ADMIN)")
-public record UpdateBusinessRequest(
+@Schema(description = "Datos que el propietario puede actualizar de su propio negocio")
+public record UpdateBusinessOwnerRequest(
 
         @Schema(description = "Nombre del negocio", example = "Barbería El Maestro")
         @NotBlank(message = "El nombre es obligatorio")
         String name,
-
-        @Schema(description = "Tipo de negocio")
-        @NotNull(message = "El tipo de negocio es obligatorio")
-        BusinessType type,
-
-        @Schema(description = "Zona horaria del negocio (formato IANA)", example = "America/Lima")
-        @NotBlank(message = "La zona horaria es obligatoria")
-        String timezone,
 
         @Schema(description = "Teléfono de contacto", example = "+51 987 654 321")
         String phone,

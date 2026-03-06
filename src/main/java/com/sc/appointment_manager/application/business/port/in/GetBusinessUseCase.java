@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface GetBusinessUseCase {
 
-    Business getById(UUID id);
+    Business getById(UUID id, UUID callerBusinessId);
 
     Page<Business> getAll(BusinessFilterQuery filter, Pageable pageable);
 }

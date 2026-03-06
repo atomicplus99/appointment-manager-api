@@ -2,11 +2,14 @@ package com.sc.appointment_manager.application.business.service;
 
 import com.sc.appointment_manager.application.business.command.CreateBusinessCommand;
 import com.sc.appointment_manager.application.business.command.UpdateBusinessCommand;
+import com.sc.appointment_manager.application.business.command.UpdateBusinessOwnerCommand;
 import com.sc.appointment_manager.application.business.port.in.CreateBusinessUseCase;
 import com.sc.appointment_manager.application.business.port.in.DeactivateBusinessUseCase;
 import com.sc.appointment_manager.application.business.port.in.GetBusinessUseCase;
+import com.sc.appointment_manager.application.business.port.in.UpdateBusinessOwnerUseCase;
 import com.sc.appointment_manager.application.business.port.in.UpdateBusinessUseCase;
 import com.sc.appointment_manager.domain.business.Business;
+import com.sc.appointment_manager.domain.business.exception.BusinessAccessDeniedException;
 import com.sc.appointment_manager.domain.business.exception.BusinessNotActiveException;
 import com.sc.appointment_manager.domain.business.exception.BusinessNotFoundException;
 import com.sc.appointment_manager.domain.business.port.BusinessRepository;
@@ -26,6 +29,7 @@ public class BusinessService implements
         CreateBusinessUseCase,
         GetBusinessUseCase,
         UpdateBusinessUseCase,
+        UpdateBusinessOwnerUseCase,
         DeactivateBusinessUseCase {
 
     private final BusinessRepository businessRepository;
@@ -53,12 +57,11 @@ public class BusinessService implements
 
     @Override
     @Transactional(readOnly = true)
-    public Business getById(UUID id) {
+    public Business getById(UUID id, UUID callerBusinessId) {
         Business business = businessRepository.findById(id)
                 .orElseThrow(() -> new BusinessNotFoundException(id));
-        if (!business.isActive()) {
-            throw new BusinessNotActiveException(id);
-        }
+        if (!business.isActive()) throw new BusinessNotActiveException(id);
+        if (callerBusinessId != null && !id.equals(callerBusinessId)) throw new BusinessAccessDeniedException(id);
         return business;
     }
 
@@ -94,9 +97,31 @@ public class BusinessService implements
 
     @Override
     @Transactional
-    public void deactivateBusiness(UUID id) {
+    public Business updateBusinessByOwner(UUID id, UpdateBusinessOwnerCommand command, UUID callerBusinessId) {
         Business existing = businessRepository.findById(id)
                 .orElseThrow(() -> new BusinessNotFoundException(id));
+        if (!existing.isActive()) throw new BusinessNotActiveException(id);
+        if (callerBusinessId != null && !id.equals(callerBusinessId)) throw new BusinessAccessDeniedException(id);
+
+        Business updated = existing.toBuilder()
+                .name(command.name())
+                .phone(command.phone())
+                .email(command.email())
+                .address(command.address())
+                .walkInsAllowed(command.walkInsAllowed())
+                .cancellationHours(command.cancellationHours())
+                .updatedAt(OffsetDateTime.now())
+                .build();
+
+        return businessRepository.save(updated);
+    }
+
+    @Override
+    @Transactional
+    public void deactivateBusiness(UUID id, UUID callerBusinessId) {
+        Business existing = businessRepository.findById(id)
+                .orElseThrow(() -> new BusinessNotFoundException(id));
+        if (callerBusinessId != null && !id.equals(callerBusinessId)) throw new BusinessAccessDeniedException(id);
 
         businessRepository.save(existing.toBuilder()
                 .active(false)

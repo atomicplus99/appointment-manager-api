@@ -112,7 +112,7 @@ infrastructure/persistence/appointment/
 | API Documentation    | SpringDoc OpenAPI (Swagger UI)      |
 | Validation           | Jakarta Bean Validation 3.0         |
 | Testing              | JUnit 5 + Testcontainers            |
-| Build Tool           | Gradle                              |
+| Build Tool           | Maven                               |
 | Containerization     | Docker + Docker Compose             |
 | CI/CD                | GitHub Actions                      |
 | Email                | Resend                              |
@@ -122,18 +122,23 @@ infrastructure/persistence/appointment/
 
 ## Data Model
 
+Clients are **not** system users — they have no account or password.
+Staff registers them when they book an appointment via phone or WhatsApp.
+Each client belongs to a specific business for full multi-tenant isolation.
+
 ```
-businesses ──< services
-           ──< staff ──< working_hours
+businesses ──< users (OWNER, STAFF)
+           ──< clients
+           ──< services
+           ──< notification_templates
+           ──< staff ──< working_hours (multiple blocks per day allowed)
                      ──< staff_unavailability
                      ──< staff_services >── services
-           ──< appointments >── clients (users)
-                           >── staff
-                           >── services
-                           ──< notifications
-appointments ──< ratings
-waitlist >── clients
-         >── businesses
+                     ──< appointments >── clients
+                                     >── services
+                                     ──< notifications
+                                     ──< ratings >── clients
+           ──< waitlist >── clients
 ```
 
 ### Appointment Lifecycle
@@ -187,7 +192,7 @@ Full interactive documentation available at `/swagger-ui.html` when running loca
 ### Prerequisites
 - Docker and Docker Compose
 - Java 21
-- Gradle
+- Maven
 
 ### 1. Clone the repository
 ```bash
@@ -205,7 +210,7 @@ Flyway migrations run automatically on application startup.
 
 ### 3. Run the application
 ```bash
-./gradlew bootRun --args='--spring.profiles.active=local'
+SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run
 ```
 
 ### 4. Verify it's running
@@ -250,10 +255,12 @@ src/main/java/com/appointments/
 └── interfaces/       # REST controllers, DTOs, exception handling
 
 src/main/resources/
-├── db/migration/     # Flyway SQL migration files
-├── application.yml
-├── application-local.yml
-└── application-prod.yml
+├── db/migration/     # Flyway schema migrations (V1–V16)
+├── db/seed/          # Flyway seed data (V17 — local only, runs after all migrations)
+├── application.properties
+├── application-local.properties        # gitignored — copy from .example
+├── application-local.properties.example
+└── application-prod.properties
 ```
 
 ---

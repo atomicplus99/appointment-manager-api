@@ -1,8 +1,8 @@
 package com.sc.appointment_manager.interfaces.rest;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.sc.appointment_manager.domain.business.exception.BusinessNotActiveException;
-import com.sc.appointment_manager.domain.business.exception.BusinessNotFoundException;
+import com.sc.appointment_manager.domain.shared.exception.DomainEntityNotActiveException;
+import com.sc.appointment_manager.domain.shared.exception.DomainEntityNotFoundException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -36,13 +36,13 @@ public class GlobalExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, message);
     }
 
-    @ExceptionHandler(BusinessNotFoundException.class)
-    public ProblemDetail handleBusinessNotFound(BusinessNotFoundException ex) {
+    @ExceptionHandler(DomainEntityNotFoundException.class)
+    public ProblemDetail handleEntityNotFound(DomainEntityNotFoundException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
-    @ExceptionHandler(BusinessNotActiveException.class)
-    public ProblemDetail handleBusinessNotActive(BusinessNotActiveException ex) {
+    @ExceptionHandler(DomainEntityNotActiveException.class)
+    public ProblemDetail handleEntityNotActive(DomainEntityNotActiveException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 

@@ -4,9 +4,10 @@ import com.sc.appointment_manager.domain.business.Business;
 import com.sc.appointment_manager.domain.business.port.BusinessRepository;
 import com.sc.appointment_manager.domain.business.query.BusinessFilterQuery;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,10 +29,9 @@ public class BusinessRepositoryAdapter implements BusinessRepository {
     }
 
     @Override
-    public List<Business> findAll(BusinessFilterQuery filter) {
-        return jpaRepository.findAll(BusinessSpecification.withFilter(filter)).stream()
-                .map(mapper::toDomain)
-                .toList();
+    public Page<Business> findAll(BusinessFilterQuery filter, Pageable pageable) {
+        return jpaRepository.findAll(BusinessSpecification.withFilter(filter), pageable)
+                .map(mapper::toDomain);
     }
 
     @Override

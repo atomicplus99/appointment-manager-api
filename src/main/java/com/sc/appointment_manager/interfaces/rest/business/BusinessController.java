@@ -9,13 +9,15 @@ import com.sc.appointment_manager.interfaces.rest.business.dto.BusinessResponse;
 import com.sc.appointment_manager.interfaces.rest.business.dto.CreateBusinessRequest;
 import com.sc.appointment_manager.interfaces.rest.business.dto.UpdateBusinessRequest;
 import com.sc.appointment_manager.interfaces.rest.business.mapper.BusinessRestMapper;
+import com.sc.appointment_manager.interfaces.rest.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -43,18 +45,18 @@ public class BusinessController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BusinessResponse>> getAll(
+    public ResponseEntity<PageResponse<BusinessResponse>> getAll(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) BusinessType type,
             @RequestParam(required = false) Boolean active,
             @RequestParam(required = false) Boolean walkInsAllowed,
-            @RequestParam(required = false) String timezone) {
-        List<BusinessResponse> responses = getBusinessUseCase
-                .getAll(mapper.toQuery(name, type, active, walkInsAllowed, timezone))
-                .stream()
-                .map(BusinessResponse::from)
-                .toList();
-        return ResponseEntity.ok(responses);
+            @RequestParam(required = false) String timezone,
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(PageResponse.from(
+                getBusinessUseCase
+                        .getAll(mapper.toQuery(name, type, active, walkInsAllowed, timezone), pageable)
+                        .map(BusinessResponse::from)
+        ));
     }
 
     @PutMapping("/{id}")

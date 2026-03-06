@@ -12,11 +12,12 @@ import com.sc.appointment_manager.domain.business.exception.BusinessNotFoundExce
 import com.sc.appointment_manager.domain.business.port.BusinessRepository;
 import com.sc.appointment_manager.domain.business.query.BusinessFilterQuery;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -63,8 +64,8 @@ public class BusinessService implements
 
     @Override
     @Transactional(readOnly = true)
-    public List<Business> getAll(BusinessFilterQuery filter) {
-        return businessRepository.findAll(filter);
+    public Page<Business> getAll(BusinessFilterQuery filter, Pageable pageable) {
+        return businessRepository.findAll(filter, pageable);
     }
 
     @Override
